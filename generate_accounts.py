@@ -14,6 +14,7 @@ import argparse
 import pymailtm
 from pymailtm.pymailtm import CouldNotGetAccountException, CouldNotGetMessagesException
 from faker import Faker
+import httpx
 fake = Faker()
 
 # Custom function for checking if the argument is below a certain value
@@ -61,6 +62,7 @@ def get_random_string(length):
     return "".join(random.choice(letters) for _ in range(length))
 
 
+
 class MegaAccount:
     def __init__(self, name, password):
         self.name = name
@@ -68,14 +70,16 @@ class MegaAccount:
 
     def generate_mail(self):
         """Generate mail.tm account and return account credentials."""
+        client = httpx.Client()  # buat HTTP client sync
+    
         for i in range(5):
             try:
                 mail = pymailtm.MailTm()
-                acc = mail.get_account()
+                acc = mail.get_account(client)  # berikan argumen client
             except CouldNotGetAccountException:
                 print(f"\r> Could not get new Mail.tm account. Retrying ({i+1} of 5)...", end="\n")
                 sleep_output = ""
-                for i in range(random.randint(8, 15)):
+                for _ in range(random.randint(8, 15)):
                     sleep_output += ". "
                     print("\r"+sleep_output, end="\033[K", flush=True)
                     time.sleep(1)
@@ -85,10 +89,12 @@ class MegaAccount:
             print("\nCould not get account. You are most likely blocked from Mail.tm.")
             print("Please wait 5 minutes and try again with a lower number of accounts/threads.")
             exit()
-
+    
         self.email = acc.address
         self.email_id = acc.id_
         self.email_password = acc.password
+    
+        client.close()
 
     def get_mail(self):
         """Get the latest email from the mail.tm account"""
