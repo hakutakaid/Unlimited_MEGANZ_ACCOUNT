@@ -1,49 +1,32 @@
-import asyncio
+#!/usr/bin/env python
+from argparse import ArgumentParser
 import signal
 import sys
-from argparse import ArgumentParser
-from pymailtm_async import MailTmAsync
+from pymailtm import MailTm
 
+def init():
+    def signal_handler(sig, frame) -> None:
+        print('\n\nClosing! Bye!')
+        sys.exit(0)
 
-def handle_exit(sig, frame):
-    print("\n\nClosing! Bye!")
-    sys.exit(0)
-
-
-def setup_signal():
-    signal.signal(signal.SIGINT, handle_exit)
-
-
-async def main():
-    setup_signal()
+    signal.signal(signal.SIGINT, signal_handler)
 
     parser = ArgumentParser(
-        description="Async interface to mail.tm web API. Temp email address will be printed."
-    )
+        description="A python interface to mail.tm web api. The temp mail address "
+                    "will be copied to the clipboard and the utility will then "
+                    "wait for a message to arrive. When it does, it will be "
+                    "opened in a browser. Exit the loop with ctrl+c.")
     parser.add_argument('-n', '--new-account', action='store_true',
-                        help="Force creation of a new account")
+                        help="whether to force the creation of a new account")
     parser.add_argument('-l', '--login', action='store_true',
-                        help="Print the credentials and exit")
+                        help="print the credentials and open the login page, then exit")
     args = parser.parse_args()
 
-    mailtm = MailTmAsync()
     if args.login:
-        account = await mailtm.get_account()
-        print("\nAccount credentials:")
-        print(f"Email: {account.address}")
-        print(f"Password: {account.password}\n")
+        MailTm().browser_login(new=args.new_account)
     else:
-        account = await mailtm.get_account()
-        print(f"Monitoring account: {account.address}")
-        print("Waiting for new messages...")
-        while True:
-            messages = await account.get_messages()
-            if messages:
-                msg = messages[0]
-                print(f"\nNew message from {msg.from_['address']} with subject '{msg.subject}'")
-                print(msg.text)
-            await asyncio.sleep(10)
+        MailTm().monitor_new_account(force_new=args.new_account)
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    init()
