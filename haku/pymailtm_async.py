@@ -55,7 +55,7 @@ class MailTmAsync:
                 if r.status_code == 200:
                     domains = [x["domain"] for x in r.json()["hydra:member"]]
                     return domains
-                await asyncio.sleep(2)
+                await asyncio.sleep(5)
 
     async def get_account(self, password=None):
         from random_username.generate import generate_username
@@ -95,7 +95,7 @@ class MailTmAsync:
 
                 messages = []
                 for msg in r.json()["hydra:member"]:
-                    await asyncio.sleep(2)
+                    await asyncio.sleep(5)
                     full_msg = await client.get(f"{MailTmAsync.api_address}/messages/{msg['id']}", headers=headers)
                     if full_msg.status_code != 200:
                         raise CouldNotGetMessagesException(f"Get message: HTTP {full_msg.status_code}")
