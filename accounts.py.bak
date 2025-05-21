@@ -101,7 +101,6 @@ class MegaAccountAsync:
 
         if "registered successfully!" in stdout.decode():
             print(f"[{self.email}] Registered successfully")
-            print(f"\n{self.email} - {self.password}")
             self.save()
         else:
             print(f"[{self.email}] Verification failed")
