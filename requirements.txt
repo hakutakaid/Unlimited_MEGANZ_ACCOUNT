@@ -1,0 +1,6 @@
+requests
+faker
+httpx
+pyperclip
+random-username
+aiofiles
