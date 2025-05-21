@@ -2,7 +2,7 @@ import asyncio
 import signal
 import sys
 from argparse import ArgumentParser
-from pymailtm_async import MailTmAsync
+from .pymailtm_async import MailTmAsync
 
 
 def handle_exit(sig, frame):
