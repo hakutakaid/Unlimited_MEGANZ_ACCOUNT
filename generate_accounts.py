@@ -12,7 +12,7 @@ import csv
 import threading
 import argparse
 import pymailtm
-from pymailtm.pymailtm import CouldNotGetAccountException, CouldNotGetMessagesException
+from pymailtm import CouldNotGetAccountException, CouldNotGetMessagesException
 from faker import Faker
 fake = Faker()
 
