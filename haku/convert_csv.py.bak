@@ -3,12 +3,8 @@ import os
 import csv
 import argparse
 
-# Pastikan default path mengarah ke file di folder utama (bukan relatif terhadap script)
-base_dir = os.path.dirname(os.path.abspath(__file__))
-default_input = os.path.join(base_dir, "accounts.csv")
-
 parser = argparse.ArgumentParser(description="Convert old csv format to new csv format")
-parser.add_argument("-i", "--input", default=default_input, type=str, help="Input file")
+parser.add_argument("-i", "--input", default="accounts.csv", type=str, help="Input file")
 args = parser.parse_args()
 
 if not os.path.exists(args.input):
@@ -23,18 +19,18 @@ with open(args.input) as csvfile:
     else:
         print("Converting CSV file...")
 
-# Rename file lama
-old_file = os.path.join(base_dir, "accounts.old.csv")
-os.rename(args.input, old_file)
+# Move file to .old
+os.rename(args.input, "accounts.old.csv")
 
-with open(old_file) as csvfile:
+with open("accounts.old.csv") as csvfile:
     csvreader_old = csv.reader(csvfile)
-    # Buat file baru dengan format header yang benar
-    with open(args.input, "w", newline='') as csvfile:
+    # Create new file
+    with open(args.input, "a", newline='') as csvfile:
         csvwriter_new = csv.writer(csvfile)
         csvwriter_new.writerow(["Email", "MEGA Password", "Usage", "Mail.tm Password", "Mail.tm ID", "Purpose"])
 
         for row in csvreader_old:
             if not row:
-                continue  # Lewati baris kosong
+                continue  # Skip empty rows
             csvwriter_new.writerow([row[0], row[4].split(":")[1], "-", row[2], row[1], row[5]])
+
