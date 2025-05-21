@@ -135,7 +135,7 @@ async def main(n, password=None):
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("-n", "--number", type=int, default=3)
+    parser.add_argument("-n", "--number", type=int, default=100)
     parser.add_argument("-p", "--password", type=str, default=None)
     args = parser.parse_args()
     asyncio.run(main(args.number, args.password))
