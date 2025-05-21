@@ -11,7 +11,7 @@ from haku.pymailtm_async import MailTmAsync, CouldNotGetAccountException, CouldN
 
 fake = Faker()
 
-API = "https://api.mail.gw"
+API = "https://api.mail.tm"
 
 
 def find_url(string):
