@@ -75,17 +75,27 @@ class MegaAccount:
         exit()
 
     async def get_mail(self):
-        while True:
+        mail = pymailtm.Account(self.email_id, self.email, self.email_password)
+        for attempt in range(10):  # 10x polling
             try:
-                mail = pymailtm.Account(self.email_id, self.email, self.email_password)
                 messages = await mail.get_messages(self.client)
-                break
-            except (CouldNotGetAccountException, CouldNotGetMessagesException):
+            except CouldNotGetMessagesException:
                 print("> Could not get latest email. Retrying...")
-                await asyncio.sleep(random.randint(5, 15))
-        if len(messages) == 0:
-            return None
-        return messages[0]
+                await asyncio.sleep(5)
+                continue
+    
+            if messages:
+                for msg in messages:
+                    print(f"> Got email: subject='{msg.subject}'")
+                    if "mega" in msg.subject.lower() or "verify" in msg.subject.lower():
+                        return msg
+    
+            print(f"> [{self.email}]: Waiting for verification email... ({attempt+1}/10)")
+            await asyncio.sleep(10)  # Wait before polling again
+    
+        print(f"> [{self.email}]: No verification email received after 10 attempts.")
+        return None
+
 
     def register(self):
         # Registering using megatools subprocess (sync)
