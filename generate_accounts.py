@@ -123,7 +123,7 @@ async def main(n, password=None):
     if not os.path.exists("accounts.csv"):
         with open("accounts.csv", "w", newline='') as csvfile:
             writer = csv.writer(csvfile)
-            writer.writerow(["Email", "MEGA Password", "Usage", "Mail.tm Password", "Mail.tm ID", "Purpose"])
+            writer.writerow(["Email", "MEGA Password"])
 
     tasks = []
     for _ in range(n):
