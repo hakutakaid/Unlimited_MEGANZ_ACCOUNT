@@ -109,7 +109,7 @@ class MegaAccountAsync:
             writer.writerow([self.email, self.password, "-", self.email_password, self.email_id, "-"])
 
 
-async def main(n, password=None):
+async def main(n, password=None, delay=60):
     if not os.path.exists("accounts.csv"):
         with open("accounts.csv", "w", newline='') as csvfile:
             writer = csv.writer(csvfile)
@@ -125,14 +125,15 @@ async def main(n, password=None):
             await acc.verify()
         except Exception as e:
             print(f"[Account {i+1}] Failed: {e}")
-        print(f"[Account {i+1}] Waiting 60 seconds before next...")
-        await asyncio.sleep(60)
+        print(f"[Account {i+1}] Waiting {delay} seconds before next...")
+        await asyncio.sleep(delay)
 
 
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("-n", "--number", type=int, default=1)
-    parser.add_argument("-p", "--password", type=str, default=None)
+    parser.add_argument("-n", "--number", type=int, default=1, help="Number of accounts to create")
+    parser.add_argument("-p", "--password", type=str, default=None, help="Password to use (optional)")
+    parser.add_argument("-d", "--delay", type=int, default=60, help="Delay in seconds between accounts")
     args = parser.parse_args()
-    asyncio.run(main(args.number, args.password))
+    asyncio.run(main(args.number, args.password, args.delay))
