@@ -5,10 +5,13 @@ import random
 import re
 import string
 from faker import Faker
+import httpx
 import subprocess
 from haku.pymailtm_async import MailTmAsync, CouldNotGetAccountException, CouldNotGetMessagesException
 
 fake = Faker()
+
+API = "https://api.mail.tm"
 
 
 def find_url(string):
@@ -109,30 +112,30 @@ class MegaAccountAsync:
             writer.writerow([self.email, self.password, "-", self.email_password, self.email_id, "-"])
 
 
+async def new_account(password):
+    name = fake.name()
+    acc = MegaAccountAsync(name, password)
+    await acc.register()
+    await acc.verify()
+
+
 async def main(n, password=None):
     if not os.path.exists("accounts.csv"):
         with open("accounts.csv", "w", newline='') as csvfile:
             writer = csv.writer(csvfile)
-            writer.writerow(["Email", "MEGA Password", "?", "Mail.tm Password", "Mail.tm ID", "?"])
+            writer.writerow(["Email", "MEGA Password"])
 
-    for i in range(n):
-        print(f"\n[Account {i+1}/{n}] Starting process")
+    tasks = []
+    for _ in range(n):
         pw = password or get_random_string(random.randint(8, 14))
-        name = fake.name()
-        acc = MegaAccountAsync(name, pw)
-        try:
-            await acc.register()
-            await acc.verify()
-        except Exception as e:
-            print(f"[Account {i+1}] Failed: {e}")
-        print(f"[Account {i+1}] Waiting 60 seconds before next...")
-        await asyncio.sleep(60)
+        tasks.append(new_account(pw))
+    await asyncio.gather(*tasks)
 
 
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("-n", "--number", type=int, default=1)
+    parser.add_argument("-n", "--number", type=int, default=100)
     parser.add_argument("-p", "--password", type=str, default=None)
     args = parser.parse_args()
     asyncio.run(main(args.number, args.password))
