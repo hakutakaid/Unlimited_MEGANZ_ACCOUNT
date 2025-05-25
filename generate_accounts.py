@@ -113,7 +113,7 @@ async def main(n, password=None, delay=60):
     if not os.path.exists("accounts.csv"):
         with open("accounts.csv", "w", newline='') as csvfile:
             writer = csv.writer(csvfile)
-            writer.writerow(["Email", "MEGA Password", "?", "Mail.tm Password", "Mail.tm ID", "?"])
+            writer.writerow(["Email", "MEGA Password"])
 
     for i in range(n):
         print(f"\n[Account {i+1}/{n}] Starting process")
