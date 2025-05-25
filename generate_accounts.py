@@ -106,7 +106,7 @@ class MegaAccountAsync:
     def save(self):
         with open("accounts.csv", "a", newline='') as csvfile:
             writer = csv.writer(csvfile)
-            writer.writerow([self.email, self.password, "-", self.email_password, self.email_id, "-"])
+            writer.writerow([self.email, self.password])
 
 
 async def main(n, password=None, delay=60):
